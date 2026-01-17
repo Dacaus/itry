@@ -26,15 +26,12 @@ include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 set(LLVM_COMPONENTS
-    # ==== 基础核心 ====
     core          # IR 数据结构：Module, Function, BasicBlock, Instruction
     support       # 工具类：字符串、文件、命令行、错误处理
     
-    # ==== IR 构建和操作 ====
     irreader      # 读取 LLVM IR（如果需要从文件加载）
     irstrip       # IR 精简工具
     
-    # ==== 代码生成 ====
     codegen       # 代码生成基础设施
     mc            # 机器码层
     mcparser      # 机器码解析
@@ -42,14 +39,12 @@ set(LLVM_COMPONENTS
     object        # 目标文件处理
     target        # 目标平台抽象
     
-    # ==== JIT 执行引擎 ====
     executionengine  # JIT 执行引擎基础
     orcjit           # ORC JIT 框架（现代，推荐）
     runtimeDyld      # 运行时动态链接
     orcshared       # ORC 共享库支持
     orctargetprocess # ORC 目标进程支持
     
-    # ==== 优化器（可选） ====
     analysis       # 分析 Passes
     transformsutils # 转换工具
     passes         # Pass 管理器
@@ -57,7 +52,6 @@ set(LLVM_COMPONENTS
     vectorize      # 向量化
     ipo            # 过程间优化
     
-    # ==== 本机目标支持 ====
     native         # 本机目标
 )
 
