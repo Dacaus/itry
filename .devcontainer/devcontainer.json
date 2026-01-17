@@ -1,0 +1,31 @@
+{
+	"name": "cpp",
+	"image": "codeberg.org/eoelab/cenv:debian",
+	// Configure vscode-extensions.
+	"customizations": {
+		"vscode": {
+		
+			"settings": {
+				"github.copilot.editor.enableAutoCompletions": true,
+				"github.copilot.chat.codeGeneration.useInstructionFiles": true
+			},
+			"extensions": [
+				"ms-vscode.cpptools-extension-pack",
+				"twxs.cmake",
+				"llvm-vs-code-extensions.vscode-clangd",
+				"yzhang.markdown-all-in-one",
+				"bierner.markdown-preview-github-style",
+				"github.copilot-chat",
+				"llvm-vs-code-extensions.lldb-dap"
+			]
+		}
+	},
+	  // 添加以下配置来挂载 SSH 密钥
+
+	"containerEnv": {
+		"PATH": "/usr/lib/llvm-21/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+	},
+	"postCreateCommand": 
+		"sh .devcontainer/setup.sh"
+	
+}
