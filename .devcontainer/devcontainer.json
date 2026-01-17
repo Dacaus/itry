@@ -21,9 +21,9 @@
 		}
 	},
 	  // 添加以下配置来挂载 SSH 密钥
-  // "mounts": [
-  //   "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind,readonly"
-  // ],
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind"
+  ],
 	"containerEnv": {
 		"PATH": "/usr/lib/llvm-21/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 	},

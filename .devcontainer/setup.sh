@@ -1,5 +1,11 @@
 apt-get update
-apt-get install -y clang-21 clangd-21 llvm-21
-apt-get install -y cmake git curl zstd libzstd-dev tree
-mkdir -p /root/.ssh
+apt-get install -y clang-21 
+apt-get install -y clangd-21 
+apt-get install -y llvm-21
+apt-get install -y cmake 
+apt-get install -y git 
+apt-get install -y curl 
+apt-get install -y zstd 
+apt-get install -y libzstd-dev 
+apt-get install -y tree
 ssh-keyscan github.com >> ~/.ssh/known_hosts
