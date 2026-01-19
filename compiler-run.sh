@@ -2,4 +2,6 @@ clear
 rm -rf build/ 
 mkdir build/
 cd build
-cmake ..
+cmake .. && make
+./build/bin/main
+

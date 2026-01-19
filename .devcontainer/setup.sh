@@ -3,6 +3,8 @@ apt-get install -y clang-21
 apt-get install -y clangd-21 
 apt-get install -y llvm-21
 apt-get install -y llvm-21-dev
+apt-get install -y lldb-21
+apt-get install -y gdb
 apt-get install -y cmake 
 apt-get install -y git 
 apt-get install -y curl 
