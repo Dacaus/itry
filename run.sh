@@ -1,0 +1,2 @@
+clear
+./build/bin/main
