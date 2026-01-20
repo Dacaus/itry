@@ -60,5 +60,5 @@ llvm_map_components_to_libnames(llvm_libs ${LLVM_COMPONENTS})
 # message(STATUS "Using LLVM components: ${LLVM_COMPONENTS}")
 # message(STATUS "LLVM libraries: ${llvm_libs}")
 
-add_executable(main src/main.cpp src/Token.cpp)
+add_executable(main src/main.cpp src/Token.cpp src/ast.cpp)
 target_include_directories(main PUBLIC include/)

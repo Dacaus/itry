@@ -2,8 +2,6 @@
 #include "string"
 #include <optional>
 
-
-
 namespace itry {
 
 enum class TokenType {
@@ -13,9 +11,8 @@ enum class TokenType {
   MINUS,
   STAR,
   SLASH,
+  _EOF,
 };
-
-
 
 class Token {
 public:
@@ -26,18 +23,14 @@ public:
   std::optional<double> getLiteral() { return _literal; }
 
 
-  friend Token createToken(std::string lexeme, TokenType type,
-                           std::optional<double> literal);
-private:
   Token(std::string lexeme, TokenType type, std::optional<double> literal)
       : _lexeme(std::string(lexeme)), _type(type), _literal(literal) {};
-
+  Token(char c, TokenType type, std::optional<double> literal)
+      : _lexeme(std::string(1,c)), _type(type), _literal(literal) {};
 private:
   std::string _lexeme;
   TokenType _type;
   std::optional<double> _literal;
 };
-
-
 
 } // namespace itry

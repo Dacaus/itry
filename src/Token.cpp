@@ -7,6 +7,7 @@ std::unordered_map<TokenType, std::string> TokenTypeName = {
     {TokenType::FUN, "FUN"},   {TokenType::DOUBLE, "DOUBLE"},
     {TokenType::PLUS, "PLUS"}, {TokenType::MINUS, "MINUS"},
     {TokenType::STAR, "STAR"}, {TokenType::SLASH, "SLASH"},
+    {TokenType::_EOF,"EOF"}
 };
 
 

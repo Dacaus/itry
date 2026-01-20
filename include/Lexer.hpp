@@ -2,105 +2,116 @@
 #include "Token.hpp"
 #include "string"
 #include <cctype>
-#include <cinttypes>
-#include <queue>
+#include <charconv>
+#include <iomanip>
+#include <optional>
 #include <stdexcept>
 #include <string>
-#include <string_view>
+#include <vector>
 namespace itry {
 
 class Lexer {
 public:
-  Lexer(std::string sources) : sources(sources), cur(0) {};
+  Lexer(std::string sources) : sources(sources), pos(0) {};
 
-  Token scanToken() {
-    char c = sources[cur];
+
+  std::vector<Token> scanTokens(){
+    while(!isAtEnd()){
+      auto token = scanToken();
+      if (!token.has_value()){
+        continue;
+      }
+      tokens.push_back(token.value());
+
+    }
+    return tokens;
+  }
+  
+  
+
+private:
+  std::optional<Token> scanToken() {
+    auto c = consume().value_or('\0');
     switch (c) {
+    case '\0':
+      return Token("",TokenType::_EOF,std::nullopt);
+      break;
+    case ' ':
+      skipWhitespace();
+      return std::nullopt;
+      break;
     case '+':
-      return createOpToken(TokenType::PLUS);
+      return createOpToken('+', TokenType::PLUS);
       break;
     case '-':
-      return createOpToken(TokenType::MINUS);
+      return createOpToken('-', TokenType::MINUS);
       break;
     case '*':
-      return createOpToken(TokenType::STAR);
+      return createOpToken('*', TokenType::STAR);
       break;
     case '/':
-      return createOpToken(TokenType::SLASH);
-      break;
-    // 数字
-    case ' ':
-      skip_whitespace();
+      return createOpToken('/', TokenType::SLASH);
       break;
     default:
-      if (std::isdigit(c)) {
-        return scanDouble();
-      } else {
-        error("No matched TokenType");
-      }
+      return scanDoubleToken();
+      break;
     }
+    return std::nullopt;
   }
 
-private:
-  Token scanDouble() {
-    char c = sources[cur];
-    std::string numStr = "";
-    while (std::isdigit(c)) {
+
+  Token scanDoubleToken() {
+    pos--;
+    char c = consume().value_or('\0');
+    std::string numStr;
+    while (std::isdigit(c) || c == '.') {
       numStr += c;
+      c = consume().value_or('\0');
     }
-    return createDoubleToken(numStr, TokenType::DOUBLE);
-  }
-
-  void skip_whitespace() {
-    while (sources[cur] == ' ') {
-      ++cur;
-    }
-  }
-
-  void error(std::string_view str) {
-    std::runtime_error("LexerError: The location: " + std::to_string(cur) +
-                       ",The char: " + sources[cur] + "," +
-                       "The Error: " + std::string(str) + ";");
-  }
-
-
-
-  void tokenCreateError(std::string_view lexeme, const std::string &str) {
-    throw std::runtime_error("lexeme: " + std::string(lexeme) + str);
-  }
-  Token createToken(std::string lexeme, TokenType type,
-                    std::optional<double> literal) {
-    return Token(lexeme, type, literal);
-  };
-
-  Token createDoubleToken(std::string_view lexeme, TokenType type) {
     double value;
     auto [ptr, ec] =
-        std::from_chars(lexeme.data(), lexeme.data() + lexeme.size(), value);
-    if (ec != std::errc()) { // 解析失败
-      if (ec == std::errc::invalid_argument) {
-        tokenCreateError(lexeme, "不是一个有效的数字");
-      } else if (ec == std::errc::result_out_of_range) {
-        tokenCreateError(lexeme, "数值超出double表示范围");
-      } else {
-        tokenCreateError(lexeme, "未知的数字解析错误");
-      }
-    }
-
-    if (ptr != lexeme.data() + lexeme.size()) { // 没有完全解析
-      char invalid_char = *ptr;
-      tokenCreateError(lexeme, "包含无效字符 " + std::string(1, invalid_char));
-    }
-    return createToken(std::string(lexeme), TokenType::DOUBLE, value);
+        std::from_chars(numStr.data(), numStr.data() + numStr.size(), value);
+    if ((ec != std::errc{}) || (ptr != (numStr.data()+numStr.size())))
+        error("Invalid number format: " + numStr);
+    return createToken(numStr,TokenType::DOUBLE, value);
   }
 
-  Token createOpToken(TokenType type) {
-    return createToken(std::string(1,sources[cur]), type, std::nullopt);
+  Token createOpToken(char c, TokenType type) {
+    return Token(c, type, std::nullopt);
+  }
+
+  Token createToken(std::string numStr,TokenType type,double value){
+    return Token(numStr,type,value);
+  }
+
+  void skipWhitespace() {
+    char c = consume().value();
+    while (c == ' ') {
+      
+      c = consume().value_or('\0');
+    }
+    pos--;
+  }
+
+  std::optional<char> consume() { 
+    if (isAtEnd())
+      return std::nullopt;
+    return sources[pos++]; 
+  }
+
+  bool isAtEnd() { return pos >= sources.length(); }
+
+  void error(const std::string &str) {
+    std::string ErrorStr = "Lexer: The Location: " + std::to_string(pos) + ", ";
+    ErrorStr = ErrorStr + "The char: " + sources[--pos] + ", ";
+    ErrorStr = ErrorStr + str;
+    throw std::runtime_error(ErrorStr);
   }
 
 private:
+  std::vector<Token> tokens;
   std::string sources;
-  int cur;
+  int pos;
 };
 
 } // namespace itry

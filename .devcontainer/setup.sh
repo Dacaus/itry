@@ -13,4 +13,7 @@ apt-get install -y libzstd-dev
 apt-get install -y tree
 apt-get install -y libedit-dev
 apt-get install -y libcurl4-openssl-dev
+
+apt-get update && apt-get install -y ca-certificates git curl nodejs
+
 ssh-keyscan github.com >> ~/.ssh/known_hosts

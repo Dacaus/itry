@@ -4,9 +4,14 @@
 #include <iostream>
 
 int main() {
-  auto sources = "+";
+  auto sources = "123.23 * 456 + 789.45 / 456";
   itry::Lexer lexer1 = itry::Lexer(sources);
-  auto token = lexer1.scanToken();
-  std::cout << token.to_string() << "\n";
-  return 0;
+  auto tokens = lexer1.scanTokens();
+  std::cout<< "The tokens:\n";
+  for (auto &token:tokens){
+    std::cout<< token.to_string()<<"\n";
+  }
+  std::cout<<"\n";
+
+
 }
