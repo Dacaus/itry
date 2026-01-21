@@ -1,5 +1,6 @@
 #pragma once
 #include "ast.hpp"
+#include <llvm-21/llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -36,6 +37,16 @@ public:
 
   llvm::Value* CreateFDiv(llvm::Value* L, llvm::Value* R, const std::string& name = "divtmp") {
     return getBuilder().CreateFDiv(L, R, name);
+  }
+
+  llvm::Function* CreateMain(){
+    llvm::FunctionType *FT =
+        llvm::FunctionType::get(llvm::Type::getDoubleTy(getContext()), false);
+    llvm::Function *F =
+        llvm::Function::Create(FT, llvm::Function::ExternalLinkage, "main", getModule());
+    llvm::BasicBlock *BB = llvm::BasicBlock::Create(getContext(), "entry", F);
+    getBuilder().SetInsertPoint(BB);
+    return F;
   }
 
 private:
