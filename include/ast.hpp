@@ -1,12 +1,18 @@
 #pragma once
 
-#include "Token.hpp"
+#include "itryIRBuilder.hpp"
+#include "token.hpp"
 #include <climits>
 #include <cstdint>
 #include <iostream>
+#include <llvm/IR/Value.h>
+#include <locale>
 #include <map>
 #include <memory>
 #include <variant>
+namespace llvm {
+  class Value;
+}
 namespace itry {
 class Number;
 class Binary;
@@ -32,7 +38,7 @@ public:
   Expr lhs;
   Expr rhs;
   Op op;
-  Binary(Expr lhs, Expr rhs, Token token)
+  Binary(Expr lhs, Token token, Expr rhs)
       : lhs(std::move(lhs)), rhs(std::move(rhs)) {
     switch (token.getType()) {
     case TokenType::PLUS:
@@ -52,13 +58,21 @@ public:
       break;
     }
   }
+
+  // 删除拷贝构造函数和赋值运算符
+  Binary(const Binary &) = delete;
+  Binary &operator=(const Binary &) = delete;
+
+  // 允许移动
+  Binary(Binary &&) = default;
+  Binary &operator=(Binary &&) = default;
 };
 
 template <class... Ts> struct overloaded : Ts... {
   using Ts::operator()...;
 };
 template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
-
 void print(const Expr &expr);
+
 
 } // namespace itry

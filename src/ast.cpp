@@ -1,4 +1,6 @@
 #include "ast.hpp"
+
+#include "itryIRBuilder.hpp"
 namespace itry {
 
 const std::map<Binary::Op, std::string> Binary::op_map = {
@@ -6,7 +8,6 @@ const std::map<Binary::Op, std::string> Binary::op_map = {
     {Op::Subtract, "Subtract"},
     {Op::Multiply, "Multiply"},
     {Op::Divide, "Divide"}};
-
 
 void print(const Expr &expr) {
   std::visit(overloaded{[](const Number &n) { std::cout << n.value; },
@@ -17,10 +18,12 @@ void print(const Expr &expr) {
                           print(b->rhs);
                           std::cout << ")";
                         }},
+
              expr);
 }
 
 
 
 
-}
+
+} // namespace itry

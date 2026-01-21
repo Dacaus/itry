@@ -1,0 +1,7 @@
+
+
+
+
+term    = factor {("+" | "-")factor}
+factor  = double { ("*" | "\") factor} 
+Double

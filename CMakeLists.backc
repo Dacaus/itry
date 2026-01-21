@@ -33,6 +33,22 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 # 精简的LLVM组件列表（只包含必要的）
 set(LLVM_COMPONENTS
     core          # IR 数据结构：Module, Function, BasicBlock, Instruction
+    # support       # 工具类：字符串、文件、命令行、错误处理
+    # irreader      # 读取 LLVM IR
+    # codegen       # 代码生成基础设施
+    # mc            # 机器码层
+    # target        # 目标平台抽象
+    
+    # # 执行引擎相关
+    # executionengine
+    # orcjit
+    # runtimeDyld
+    
+    # # 分析和优化
+    # analysis
+    # transformutils  # 注意：是transformutils不是transformsutils
+    # scalaropts
+    # ipo
 )
 
 # 使用llvm_map_components_to_libnames

@@ -1,4 +1,4 @@
-#include "Token.hpp"
+#include "token.hpp"
 #include <string>
 #include <unordered_map>
 namespace itry {

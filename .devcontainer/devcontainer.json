@@ -3,15 +3,19 @@
 	"image": "codeberg.org/eoelab/cenv:debian",
 	// Configure vscode-extensions.
 	"customizations": {
+		"runArgs": [
+			"--network=host"
+		],
 		"vscode": {
-		
 			"settings": {
 				"github.copilot.editor.enableAutoCompletions": true,
 				"github.copilot.chat.codeGeneration.useInstructionFiles": true
 			},
+			// "remoteUser": "root",
 			"extensions": [
 				"ms-vscode.cpptools-extension-pack",
 				"twxs.cmake",
+				"ms-vscode.cpptools",
 				"llvm-vs-code-extensions.vscode-clangd",
 				"yzhang.markdown-all-in-one",
 				"bierner.markdown-preview-github-style",
@@ -21,14 +25,17 @@
 			]
 		}
 	},
-	  // 添加以下配置来挂载 SSH 密钥
-  "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind"
-  ],
+	// 添加以下配置来挂载 SSH 密钥
+	"mounts": [
+		"source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,type=bind"
+	],
 	"containerEnv": {
-		"PATH": "/usr/lib/llvm-21/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+		"PATH": "/usr/lib/llvm-21/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+		"http_proxy": "http://host.docker.internal:3067",
+		"https_proxy": "http://host.docker.internal:3067",
+		"HTTP_PROXY": "http://host.docker.internal:3067",
+		"HTTPS_PROXY": "http://host.docker.internal:3067",
+		"no_proxy": "localhost,127.0.0.1,host.docker.internal,.docker.internal"
 	},
-	"postCreateCommand": 
-		"sh .devcontainer/setup.sh"
-	
+	"postCreateCommand": "sh .devcontainer/setup.sh"
 }

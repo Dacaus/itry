@@ -1,6 +1,6 @@
 
-
-#include "Token.hpp"
+#pragma once
+#include "token.hpp"
 #include "ast.hpp"
 #include <initializer_list>
 #include <map>
@@ -18,8 +18,10 @@ private:
   Expr parseExpression();
   Expr parseTerm(); // multiply
   Expr parseFactor(); // 
-
+  Expr parseDouble();
   bool match(std::initializer_list<TokenType> types) {
+    if (isAtEnd())
+      return false;
     for (auto &type : types) {
       if (type == tokens[pos].getType())
         return true;
@@ -27,7 +29,14 @@ private:
     return false;
   }
   // int GetOpPrecedence(Binary::Op op);
-
+  Token advance() {
+    if (!isAtEnd())
+      pos++;
+    return previous();
+  }
+  Token previous() { return tokens[pos - 1]; }
+  Token peek() { return tokens[pos]; }
+  bool isAtEnd() { return pos >= tokens.size(); }
 private:
   int pos;
   std::vector<Token> tokens;

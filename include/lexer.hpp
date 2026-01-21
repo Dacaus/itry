@@ -1,5 +1,5 @@
 #pragma once
-#include "Token.hpp"
+#include "token.hpp"
 #include "string"
 #include <cctype>
 #include <charconv>
