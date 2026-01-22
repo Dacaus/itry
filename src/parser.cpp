@@ -1,17 +1,31 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "token.hpp"
-#include <map>
 namespace itry {
 using Op = Binary::Op;
-// const std::map<Op, int> Parser::BinOpPrecedence{
-//   {Op::Add, 10},
-//   {Op::Subtract,10},
-//   {Op::Multiply,20},
-//   {Op::Divide,20}
-// };
 
-Expr Parser::parse() { return parseTerm(); }
+Expr Parser::parse() { return parseExpression(); }
+
+Expr Parser::parseExpression() {
+  if (match({TokenType::DOUBLE})) {
+    return parseTerm();
+  }
+  else if(match({TokenType::IDENTIFIER})){
+    return assignment();
+  }
+  throw std::runtime_error("Parser: Unexpected token in expression");
+}
+
+Expr Parser::assignment() {
+  auto identifier_token = advance();
+  if (match({TokenType::EQUAL})) {
+    advance(); // consume '='
+    auto value_expr = parseExpression();
+    return std::make_unique<Assignment>(identifier_token.getLexeme(), std::move(value_expr));
+  }
+  throw std::runtime_error("Parser: Expected '=' after identifier");
+}
+
 
 Expr Parser::parseTerm() {
   auto Left = parseFactor();

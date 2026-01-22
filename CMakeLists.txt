@@ -33,6 +33,7 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 # 精简的LLVM组件列表（只包含必要的）
 set(LLVM_COMPONENTS
     core          # IR 数据结构：Module, Function, BasicBlock, Instruction
+    native
 )
 
 # 使用llvm_map_components_to_libnames

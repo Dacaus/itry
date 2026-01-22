@@ -1,35 +1,45 @@
-#include "irCodegen.hpp"
+#include "ast.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
-#include "token.hpp"
 #include <endian.h>
 #include <iostream>
-int main() {
-  auto sources = "123.23 * 456 + 789.45 / 456 + 34 - 23 * 45";
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/InitLLVM.h"
+#include "llvm/Support/TargetSelect.h"
+
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/InitLLVM.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/Error.h"
+  
+
+llvm::ExitOnError ExitOnErr;
+
+int main(int argc, char** argv) {
+
+  // Initialize LLVM.
+  llvm::InitLLVM X(argc, argv);
+
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+
+  llvm::cl::ParseCommandLineOptions(argc, argv, "HowToUseLLJIT");
+  ExitOnErr.setBanner(std::string(argv[0]) + ": ");
+
+  auto sources = "a = 123";
   itry::Lexer lexer1 = itry::Lexer(sources);
   auto tokens = lexer1.scanTokens();
+
+
+
   itry::Parser iparser = itry::Parser(tokens);
 
   auto expr = iparser.parse();
-  print(expr);
-  itry::ItryIRBuilder irBuilder;
-  llvm::Value *value = itry::IRCodegen().operator()(expr, irBuilder);
-  std::cout << "Generated LLVM IR:\n";
-  value->print(llvm::outs());
-  llvm::outs() << "\n";
 
-  if (llvm::ConstantFP *constFP = llvm::dyn_cast<llvm::ConstantFP>(value)) {
-    // 获取 APFloat 值
-    llvm::APFloat floatVal = constFP->getValueAPF();
+  itry::AstPrinter printer;
+  printer.print(expr);
 
-    // 转换为 double
-    double result = floatVal.convertToDouble();
-
-    std::cout << "Computed result: " << std::setprecision(15) << result
-              << std::endl;
-
-    // 或者输出十六进制表示
-    std::cout << "Hex representation: " << std::hexfloat << result
-              << std::defaultfloat << std::endl;
-  }
+  // print(expr);
+  std::cout << std::endl;
+  return 0;
 }

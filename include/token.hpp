@@ -11,6 +11,8 @@ enum class TokenType {
   MINUS,
   STAR,
   SLASH,
+  IDENTIFIER,
+  EQUAL,
   _EOF,
 };
 

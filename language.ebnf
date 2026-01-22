@@ -2,6 +2,9 @@
 
 
 
-term    = factor {("+" | "-")factor}
-factor  = double { ("*" | "\") factor} 
-Double
+
+assignment  = identifier "=" (identifier | number)
+
+
+term        = factor {("+" | "-")factor}
+factor      = number { ("*" | "\") factor} 

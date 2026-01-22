@@ -3,8 +3,6 @@
 #include "token.hpp"
 #include "ast.hpp"
 #include <initializer_list>
-#include <map>
-#include <queue>
 #include <vector>
 namespace itry {
 class Parser {
@@ -16,6 +14,7 @@ public:
 
 private:
   Expr parseExpression();
+  Expr assignment();
   Expr parseTerm(); // multiply
   Expr parseFactor(); // 
   Expr parseDouble();
