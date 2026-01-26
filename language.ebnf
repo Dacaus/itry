@@ -7,5 +7,8 @@ statement = funcDeclStatement
 funcDeclStatement = "func" identifier "("[identifier{"," identifier}] ")" block
 identifierDeclStatment  = "var" identifier "="  expression ";"
 assignStatment  = identifier  "=" expression  ";"
-expression  = computeExpression
-            | 
+expression  = term  {"+" | "-" term}
+term  = factor  {"*" | "/" factor}
+factor = primary  
+primary =  NUMBER | functionCall | "("  expression  ")"
+functionCall  = identifier  "(" [ expression {"," expression} ] ")"
