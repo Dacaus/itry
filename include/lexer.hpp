@@ -3,7 +3,6 @@
 #include "token.hpp"
 #include <cctype>
 #include <charconv>
-#include <iomanip>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -18,77 +17,106 @@ public:
   std::vector<Token> scanTokens() {
     while (!isAtEnd()) {
       auto token = scanToken();
-      if (!token.has_value()) {
-        continue;
+      if (token.has_value()) {
+        tokens.push_back(token.value());
+#ifdef _DEBUG
+        std::cout << "Scanned Token: " << token->to_string() << std::endl;
+#endif
+      } else {
+        break;
       }
-      tokens.push_back(token.value());
     }
     return tokens;
   }
 
 private:
   std::optional<Token> scanToken() {
-    auto c = consume().value_or('\0');
+    auto c = consume();
+    if (c == '\0') {
+      return createOpToken('\0', TokenType::_EOF);
+    }
+#ifdef _DEBUG
+    std::cout << "scanToken() char: " << c << std::endl;
+#endif
     switch (c) {
-    case '\0':
-      return Token("", TokenType::_EOF, std::nullopt);
-      break;
     case ' ':
       skipWhitespace();
-      return std::nullopt;
-      break;
+      return scanToken();
     case '+':
       return createOpToken('+', TokenType::PLUS);
-      break;
     case '-':
       return createOpToken('-', TokenType::MINUS);
-      break;
     case '*':
       return createOpToken('*', TokenType::STAR);
-      break;
     case '/':
       return createOpToken('/', TokenType::SLASH);
-      break;
     case '=':
       return createOpToken('=', TokenType::EQUAL);
+    case '(':
+      return createOpToken('(', TokenType::LEFT_PAREN);
+    case ')':
+      return createOpToken(')', TokenType::RIGHT_PAREN);
+    case ',':
+      return createOpToken(',', TokenType::COMMA);
     default:
-      if (std::isdigit(c) || c == '.') {
-        return scanDoubleToken();
-        break;
-      } else if (std::isalpha(c) || c == '_') {
+      if (std::isalpha(c)) {
+        backtrack();
         return scanIdentifierToken();
-        break;
+      } else if (std::isdigit(c) || c == '.') {
+        backtrack();
+        return scanDoubleToken();
+      } else {
+        error("Lexer:Unexpected character.");
       }
     }
+
     return std::nullopt;
   }
 
   Token scanIdentifierToken() {
-    pos--;
-    char c = consume().value_or('\0');
     std::string idStr;
-    while (std::isalpha(c) || std::isdigit(c) || c == '_') {
-      idStr += c;
-      c = consume().value_or('\0');
+    while (true) {
+      auto c = consume();
+#ifdef _DEBUG
+      std::cout << "Identifier char: " << c << std::endl;
+#endif
+      if (c != '\0' && (std::isalnum(c) || c == '_')) {
+        idStr.push_back(c);
+      } else if (c == '\0') {
+        break;
+      } else {
+        backtrack();
+        break;
+      }
     }
-    // Check if the identifier is a reserved keyword
-    pos--;
+
+    if (ReservedWords.find(idStr) != ReservedWords.end()) {
+      return Token(idStr, ReservedWords.at(idStr), std::nullopt);
+    }
+
     return createIdentiferToken(idStr);
   }
 
   Token scanDoubleToken() {
-    pos--;
-    char c = consume().value_or('\0');
     std::string numStr;
-    while (std::isdigit(c) || c == '.') {
-      numStr += c;
-      c = consume().value_or('\0');
+    int dotCount = 0;
+    while (true) {
+      auto c = consume();
+      if (c != '\0' && (std::isdigit(c) || c == '.')) {
+        if (c == '.') {
+          dotCount++;
+          if (dotCount > 1) {
+            error("Lexer: Invalid number format with multiple dots.");
+          }
+        }
+        numStr.push_back(c);
+      } else {
+        break;
+      }
     }
-    double value;
-    auto [ptr, ec] =
-        std::from_chars(numStr.data(), numStr.data() + numStr.size(), value);
-    if ((ec != std::errc{}) || (ptr != (numStr.data() + numStr.size())))
-      error("Invalid number format: " + numStr);
+    backtrack();
+    double value = 0.0;
+    std::from_chars(numStr.data(), numStr.data() + numStr.size(), value);
     return createToken(numStr, TokenType::DOUBLE, value);
   }
 
@@ -105,18 +133,35 @@ private:
   }
 
   void skipWhitespace() {
-    char c = consume().value();
-    while (c == ' ') {
-
-      c = consume().value_or('\0');
+    while (true) {
+      auto c = consume();
+      if (c == '\0') {
+        break;
+      }
+      if (c == ' ' || c == '\r' || c == '\t' || c == '\n') {
+        continue;
+      } else {
+        backtrack();
+        break;
+      }
     }
-    pos--;
   }
 
-  std::optional<char> consume() {
+  char consume() {
     if (isAtEnd())
-      return std::nullopt;
+      return '\0';
     return sources[pos++];
+  }
+
+  char peek() {
+    if (isAtEnd())
+      return '\0';
+    return sources[pos];
+  }
+
+  void backtrack() {
+    if (pos > 0)
+      --pos;
   }
 
   bool isAtEnd() { return pos >= sources.length(); }

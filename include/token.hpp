@@ -1,6 +1,8 @@
 #pragma once
 #include "string"
 #include <optional>
+#include <unordered_map>
+#include <unordered_map>
 
 namespace itry {
 
@@ -13,6 +15,9 @@ enum class TokenType {
   SLASH,
   IDENTIFIER,
   EQUAL,
+  LEFT_PAREN,
+  RIGHT_PAREN,
+  COMMA,
   _EOF,
 };
 
@@ -34,5 +39,8 @@ private:
   TokenType _type;
   std::optional<double> _literal;
 };
+
+extern const std::unordered_map<std::string, TokenType> ReservedWords;
+
 
 } // namespace itry

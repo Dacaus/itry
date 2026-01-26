@@ -1,0 +1,11 @@
+var i = 123;
+func foo(a,b){
+  c =  a + b;
+  d = c + a;
+  return d;
+}
+var c = foo(i,i+1);
+i = c;
+
+print(c);
+    

@@ -1,10 +1,11 @@
-
-
-
-
-
-assignment  = identifier "=" (identifier | number)
-
-
-term        = factor {("+" | "-")factor}
-factor      = number { ("*" | "\") factor} 
+program   = { statement | block }
+block     = "{" {statement}  "}"
+statement = funcDeclStatement
+          | identifierDeclStatment
+          | assignStatment
+          | expression ";"
+funcDeclStatement = "func" identifier "("[identifier{"," identifier}] ")" block
+identifierDeclStatment  = "var" identifier "="  expression ";"
+assignStatment  = identifier  "=" expression  ";"
+expression  = computeExpression
+            | 

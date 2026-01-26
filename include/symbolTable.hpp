@@ -6,6 +6,7 @@
 namespace itry {
 class SymbolTable{
   std::unordered_map<std::string, llvm::Value*> table;
+  
 public:
   void set(const std::string &name, llvm::Value* value){
     table[name] = value;
