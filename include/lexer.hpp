@@ -8,6 +8,9 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#ifdef _DEBUG
+#include <iostream>
+#endif
 namespace itry {
 
 class Lexer {
@@ -33,15 +36,19 @@ private:
   std::optional<Token> scanToken() {
     auto c = consume();
     if (c == '\0') {
-      return createOpToken('\0', TokenType::_EOF);
+      return std::nullopt;
     }
 #ifdef _DEBUG
     std::cout << "scanToken() char: " << c << std::endl;
 #endif
     switch (c) {
     case ' ':
+    case '\t':
+    case '\r':
+    case '\n':
       skipWhitespace();
       return scanToken();
+
     case '+':
       return createOpToken('+', TokenType::PLUS);
     case '-':
@@ -58,6 +65,12 @@ private:
       return createOpToken(')', TokenType::RIGHT_PAREN);
     case ',':
       return createOpToken(',', TokenType::COMMA);
+    case '{':
+      return createOpToken('{', TokenType::LEFT_BRACE);
+    case '}':
+      return createOpToken('}', TokenType::RIGHT_BRACE);
+    case ';':
+      return createOpToken(';', TokenType::SEMICOLON);
     default:
       if (std::isalpha(c)) {
         backtrack();

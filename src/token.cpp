@@ -4,7 +4,9 @@
 namespace itry {
 
 std::unordered_map<TokenType, std::string> TokenTypeName = {
-    {TokenType::FUN, "FUN"},
+    {TokenType::FUNC, "FUNC"},
+    {TokenType::VAR, "VAR"},
+    {TokenType::RETURN, "RETURN"},
     {TokenType::DOUBLE, "DOUBLE"},
     {TokenType::PLUS, "PLUS"},
     {TokenType::MINUS, "MINUS"},
@@ -14,12 +16,16 @@ std::unordered_map<TokenType, std::string> TokenTypeName = {
     {TokenType::EQUAL, "EQUAL"},
     {TokenType::LEFT_PAREN, "LEFT_PAREN"},
     {TokenType::RIGHT_PAREN, "RIGHT_PAREN"},
+    {TokenType::LEFT_BRACE, "LEFT_BRACE"},
+    {TokenType::RIGHT_BRACE, "RIGHT_BRACE"},
+    {TokenType::SEMICOLON, "SEMICOLON"},
     {TokenType::COMMA, "COMMA"},
     {TokenType::_EOF, "EOF"}};
 
-
 const std::unordered_map<std::string, TokenType> ReservedWords = {
-    {"func", TokenType::FUN},
+    {"func", TokenType::FUNC},
+    {"var", TokenType::VAR},
+    {"return", TokenType::RETURN}
 };
 
 std::string Token::to_string() {

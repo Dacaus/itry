@@ -7,7 +7,9 @@
 namespace itry {
 
 enum class TokenType {
-  FUN,
+  FUNC,
+  VAR,
+  RETURN,
   DOUBLE,
   PLUS,
   MINUS,
@@ -17,6 +19,9 @@ enum class TokenType {
   EQUAL,
   LEFT_PAREN,
   RIGHT_PAREN,
+  LEFT_BRACE,
+  RIGHT_BRACE,
+  SEMICOLON,
   COMMA,
   _EOF,
 };

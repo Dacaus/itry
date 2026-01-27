@@ -1,2 +1,2 @@
 clear
-./build/bin/main
+./build/bin/main ./code/main.txt

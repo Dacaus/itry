@@ -1,63 +1,127 @@
 #pragma once
-#include "token.hpp"
-#include <iostream>
-#include <llvm/IR/Value.h>
-#include <map>
 #include <memory>
+#include <optional>
 #include <string>
-#include <string_view>
 #include <variant>
 #include <vector>
 namespace llvm {
 class Value;
 }
 namespace itry {
+
 class Number;
 class Binary;
-class Variable;
-class Assignment;
-class FunctionExpr;
+class Identifier;
+class FunctionCall;
+
 using Expr =
-    std::variant<Number, std::unique_ptr<Binary>, std::unique_ptr<Assignment>,
-                 std::unique_ptr<FunctionExpr>, std::unique_ptr<Variable>>;
+    std::variant<std::unique_ptr<Number>, std::unique_ptr<Binary>,
+                 std::unique_ptr<FunctionCall>, std::unique_ptr<Identifier>>;
 
 class Number {
-  double value;
-
 public:
   Number(double value) : value(value) {}
+  double value;
 };
 
-class Variable {
-  std::string name;
-
+class Binary {
 public:
-  Variable(std::string name) : name(name) {}
+  enum class Op { ADD, SUB, MUL, DIV };
+  Binary(Expr left, Op op, Expr right)
+      : left(std::move(left)), op(op), right(std::move(right)) {}
+  Expr left;
+  Op op;
+  Expr right;
 };
 
-class Assignment {
+class Identifier {
+public:
+  Identifier(std::string name) : name(name) {}
+  std::string name;
+};
+
+class FunctionCall {
+public:
+  FunctionCall(std::string name, std::vector<Expr> args)
+      : name(name), args(std::move(args)) {}
+  std::string name;
+  std::vector<Expr> args;
+};
+
+class AssignStmt;
+class IdentifierDeclStmt;
+class FunctionDeclStmt;
+class ExpressionStmt;
+class ReturnStmt;
+using Stmt = std::variant<
+    std::unique_ptr<AssignStmt>, std::unique_ptr<IdentifierDeclStmt>,
+    std::unique_ptr<FunctionDeclStmt>, std::unique_ptr<ExpressionStmt>,
+    std::unique_ptr<ReturnStmt>>;
+class Block;
+class Block {
+public:
+  Block(std::vector<Stmt> stmts) : stmts(std::move(stmts)) {}
+  std::vector<Stmt> stmts;
+};
+
+class AssignStmt {
+public:
+  AssignStmt(std::string name, Expr value)
+      : name(name), value(std::move(value)) {}
   std::string name;
   Expr value;
+};
 
+class IdentifierDeclStmt {
 public:
-  Assignment(std::string name, Expr value)
+  IdentifierDeclStmt(std::string name, Expr value)
       : name(name), value(std::move(value)) {}
+  IdentifierDeclStmt(std::string name) : name(name), value(std::nullopt) {}
+  std::string name;
+  std::optional<Expr> value;
 };
 
-class Stmt {
+class FunctionDeclStmt {
+public:
+  FunctionDeclStmt(std::string name, std::vector<std::string> params,
+                   std::unique_ptr<Block> body)
+      : name(name), params(std::move(params)), body(std::move(body)) {}
+  std::string name;
+  std::vector<std::string> params;
+  std::unique_ptr<Block> body;
+};
+
+class ReturnStmt {
+public:
+  ReturnStmt(Expr value) : value(std::move(value)) {}
+  Expr value;
+};
+
+class ExpressionStmt {
+public:
+  ExpressionStmt(Expr expr) : expr(std::move(expr)) {}
   Expr expr;
-
-public:
-  Stmt(Expr expr) : expr(std::move(expr)) {}
 };
 
-class Block {
-  std::vector<Stmt> statements;
-
+// A class to print the AST included all of AST'type for debugging purposes
+class AstPrinter {
 public:
-  Block() = default;
-  Block(std::vector<Stmt> statements) : statements(std::move(statements)) {}
-  void addStatement(Stmt stmt) { statements.push_back(std::move(stmt)); }
+  void print(const Expr &expr, int indent = 0);
+  void print(const Stmt &stmt, int indent = 0);
+  void print(const std::vector<Stmt> &stmts, int indent = 0);
+  void print(Number &number, int indent = 0);
+  void print(Binary &binary, int indent = 0);
+  void print(Identifier &identifier, int indent = 0);
+  void print(FunctionCall &funcCall, int indent = 0);
+  void print(AssignStmt &assignStmt, int indent = 0);
+  void print(IdentifierDeclStmt &identDeclStmt, int indent = 0);
+  void print(FunctionDeclStmt &funcDeclStmt, int indent = 0);
+  void print(ExpressionStmt &exprStmt, int indent = 0);
+  void print(ReturnStmt &returnStmt, int indent = 0);
+  void print(Block &block, int indent = 0);
+
+private:
+  void printIndent(int indent);
 };
 
 } // namespace itry

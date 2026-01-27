@@ -13,8 +13,26 @@
 #include "llvm/Support/TargetSelect.h"
 
 llvm::ExitOnError ExitOnErr;
+#include <fstream>
+#include <sstream>
+#include <string>
+
+std::string readFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file: " + filename);
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
 
 int main(int argc, char **argv) {
+
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <source_file>" << std::endl;
+    return 1;
+  }
 
   // Initialize LLVM.
   llvm::InitLLVM X(argc, argv);
@@ -22,20 +40,20 @@ int main(int argc, char **argv) {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
 
-  llvm::cl::ParseCommandLineOptions(argc, argv, "HowToUseLLJIT");
   ExitOnErr.setBanner(std::string(argv[0]) + ": ");
-
-  auto sources = "func add(a, b) a + b";
+  std::string filename = argv[1];
+  auto sources = readFile(filename);
 
   itry::Lexer lexer1 = itry::Lexer(sources);
 
   auto tokens = lexer1.scanTokens();
 
-  itry::Parser iparser = itry::Parser(tokens);
+  itry::Parser iparser = itry::Parser();
 
-  auto expr = iparser.parse();
+  auto expr = iparser.parse(tokens);
 
   itry::AstPrinter printer;
+  printer.print(expr);
 #ifdef _DEBUG
   printer.print(expr);
 #endif

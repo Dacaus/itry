@@ -3,12 +3,15 @@ block     = "{" {statement}  "}"
 statement = funcDeclStatement
           | identifierDeclStatment
           | assignStatment
-          | expression ";"
+          | returnStatment
+          | exprStatment
+exprStatment = expression ";"
 funcDeclStatement = "func" identifier "("[identifier{"," identifier}] ")" block
 identifierDeclStatment  = "var" identifier "="  expression ";"
+                        | "var" identifier;
 assignStatment  = identifier  "=" expression  ";"
 expression  = term  {"+" | "-" term}
 term  = factor  {"*" | "/" factor}
 factor = primary  
-primary =  NUMBER | functionCall | "("  expression  ")"
+primary =  NUMBER | functionCall | "("  expression  ")" | identifier
 functionCall  = identifier  "(" [ expression {"," expression} ] ")"
