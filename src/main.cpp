@@ -1,13 +1,13 @@
 #include "ast.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
-#include "llvm/Support/CommandLine.h"
+
 #include "llvm/Support/InitLLVM.h"
 #include "llvm/Support/TargetSelect.h"
 #include <endian.h>
 #include <iostream>
 
-#include "llvm/Support/CommandLine.h"
+
 #include "llvm/Support/Error.h"
 #include "llvm/Support/InitLLVM.h"
 #include "llvm/Support/TargetSelect.h"
@@ -16,6 +16,8 @@ llvm::ExitOnError ExitOnErr;
 #include <fstream>
 #include <sstream>
 #include <string>
+
+#include "itryIRBuilder.hpp"
 
 std::string readFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -53,11 +55,13 @@ int main(int argc, char **argv) {
   auto expr = iparser.parse(tokens);
 
   itry::AstPrinter printer;
-  printer.print(expr);
+
 #ifdef _DEBUG
   printer.print(expr);
 #endif
-
+  itry::ItryIRBuilder irBuilder;
+  llvm::Module *module = irBuilder.generateCode(expr);
+  irBuilder.printIR();
   std::cout << std::endl;
   return 0;
 }

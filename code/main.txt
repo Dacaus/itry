@@ -7,5 +7,4 @@ func foo(a,b){
 var c = foo(i,i+1);
 i = c;
 
-print(c);
     
