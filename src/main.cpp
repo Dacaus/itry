@@ -9,8 +9,6 @@
 
 
 #include "llvm/Support/Error.h"
-#include "llvm/Support/InitLLVM.h"
-#include "llvm/Support/TargetSelect.h"
 
 llvm::ExitOnError ExitOnErr;
 #include <fstream>
@@ -29,6 +27,12 @@ std::string readFile(const std::string& filename) {
     return buffer.str();
 }
 
+void initializeLLVM() {
+    llvm::InitializeNativeTarget();
+    llvm::InitializeNativeTargetAsmPrinter();
+    llvm::InitializeNativeTargetAsmParser();
+}
+
 int main(int argc, char **argv) {
 
   if (argc < 2) {
@@ -39,8 +43,7 @@ int main(int argc, char **argv) {
   // Initialize LLVM.
   llvm::InitLLVM X(argc, argv);
 
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
+  initializeLLVM();
 
   ExitOnErr.setBanner(std::string(argv[0]) + ": ");
   std::string filename = argv[1];

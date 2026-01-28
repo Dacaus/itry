@@ -34,6 +34,9 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 set(LLVM_COMPONENTS
     core          # IR 数据结构：Module, Function, BasicBlock, Instruction
     native
+    LLVMSupport
+    LLVMCore
+    LLVMTarget
 )
 
 # 使用llvm_map_components_to_libnames

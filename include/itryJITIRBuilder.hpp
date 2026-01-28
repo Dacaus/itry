@@ -18,13 +18,6 @@ public:
         builder(std::make_unique<::llvm::IRBuilder<>>(*context)),
         symbolTable(std::make_unique<SymbolTable>()) {
     module = std::make_unique<::llvm::Module>("itry_module", *context);
-    llvm::FunctionType *funcType =
-        llvm::FunctionType::get(llvm::Type::getVoidTy(getContext()), false);
-    llvm::Function *globalFunc = llvm::Function::Create(
-        funcType, llvm::Function::ExternalLinkage, "__global__", &getModule());
-
-    globalBlock = llvm::BasicBlock::Create(getContext(), "global", globalFunc);
-    getBuilder().SetInsertPoint(globalBlock);
   }
 
   llvm::Module *generateCode(const std::vector<Stmt> &statements) {
@@ -144,7 +137,6 @@ private:
       getBuilder().CreateRet(
           llvm::ConstantFP::get(getContext(), llvm::APFloat(0.0)));
     }
-    getBuilder().SetInsertPoint(globalBlock);
     return function;
   }
 
@@ -170,7 +162,7 @@ private:
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
   std::unique_ptr<SymbolTable> symbolTable;
-  llvm::BasicBlock *globalBlock;
+
 };
 
 } // namespace itry
