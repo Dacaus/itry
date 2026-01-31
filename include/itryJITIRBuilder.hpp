@@ -7,17 +7,42 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
+#include <llvm/ExecutionEngine/Orc/ThreadSafeModule.h>
 #include <memory>
 namespace itry {
 
-class ItryIRBuilder {
+class ItryJITIRBuilder {
 
 public:
-  ItryIRBuilder()
+  ItryJITIRBuilder()
       : context(std::make_unique<llvm::LLVMContext>()),
         builder(std::make_unique<::llvm::IRBuilder<>>(*context)),
         symbolTable(std::make_unique<SymbolTable>()) {
     module = std::make_unique<::llvm::Module>("itry_module", *context);
+  }
+
+  llvm::orc::ThreadSafeModule generateTSM(const std::vector<Stmt> &statements) {
+    // Create a main function for module-level code
+    llvm::FunctionType *mainType = llvm::FunctionType::get(
+        llvm::Type::getDoubleTy(getContext()), false);
+    llvm::Function *mainFunc = llvm::Function::Create(
+        mainType, llvm::Function::ExternalLinkage, "main", &getModule());
+    
+    llvm::BasicBlock *mainBB = llvm::BasicBlock::Create(getContext(), "entry", mainFunc);
+    getBuilder().SetInsertPoint(mainBB);
+
+    for (const auto &stmt : statements) {
+      std::visit([this](auto &s) { this->generateCode(*s); }, stmt);
+    }
+
+    // If no return was explicitly set, add a default return
+    if (getBuilder().GetInsertBlock()->getTerminator() == nullptr) {
+      getBuilder().CreateRet(
+          llvm::ConstantFP::get(getContext(), llvm::APFloat(0.0)));
+    }
+
+    auto tsContext = llvm::orc::ThreadSafeContext(std::move(context));
+    return llvm::orc::ThreadSafeModule(std::move(module), tsContext);
   }
 
   llvm::Module *generateCode(const std::vector<Stmt> &statements) {
@@ -48,7 +73,7 @@ private:
     if (value.has_value()) {
       return value.value();
     }
-    throw std::runtime_error("Undefined variable: " + identifier.name);
+    throw std::runtime_error(std::string("Undefined variable: ") + identifier.name);
   }
 
   llvm::Value *generateCode(Binary &binary) {
@@ -67,14 +92,14 @@ private:
     case Binary::Op::DIV:
       return getBuilder().CreateFDiv(left, right, "divtmp");
     default:
-      throw std::runtime_error("Unknown binary operator");
+      throw std::runtime_error(std::string("Unknown binary operator"));
     }
   }
 
   llvm::Value *generateCode(FunctionCall &funcCall) {
     llvm::Function *calleeFunc = getModule().getFunction(funcCall.name);
     if (!calleeFunc) {
-      throw std::runtime_error("Unknown function referenced: " + funcCall.name);
+      throw std::runtime_error(std::string("Unknown function referenced: ") + funcCall.name);
     }
 
     std::vector<llvm::Value *> argsV;
@@ -87,7 +112,6 @@ private:
     return getBuilder().CreateCall(calleeFunc, argsV, "calltmp");
   }
 
-  
   llvm::Value *generateCode(AssignStmt &assignStmt) {
     llvm::Value *value =
         std::visit([this](auto &expr) { return this->generateCode(*expr); },
@@ -112,6 +136,9 @@ private:
   }
 
   llvm::Value *generateCode(FunctionDeclStmt &funcDeclStmt) {
+    // Save the current insertion point (in main function)
+    llvm::BasicBlock *fnBlock = getBuilder().GetInsertBlock();
+    
     std::vector<llvm::Type *> paramTypes(funcDeclStmt.params.size(),
                                          llvm::Type::getDoubleTy(getContext()));
     llvm::FunctionType *funcType = llvm::FunctionType::get(
@@ -137,6 +164,10 @@ private:
       getBuilder().CreateRet(
           llvm::ConstantFP::get(getContext(), llvm::APFloat(0.0)));
     }
+    
+    // Restore insertion point to main function
+    getBuilder().SetInsertPoint(fnBlock);
+    
     return function;
   }
 
@@ -162,7 +193,6 @@ private:
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
   std::unique_ptr<SymbolTable> symbolTable;
-
 };
 
 } // namespace itry

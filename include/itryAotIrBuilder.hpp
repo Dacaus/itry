@@ -55,7 +55,7 @@ private:
     if (value.has_value()) {
       return value.value();
     }
-    throw std::runtime_error("Undefined variable: " + identifier.name);
+    throw std::runtime_error(std::string("Undefined variable: ") + identifier.name);
   }
 
   llvm::Value *generateCode(Binary &binary) {
@@ -74,14 +74,14 @@ private:
     case Binary::Op::DIV:
       return getBuilder().CreateFDiv(left, right, "divtmp");
     default:
-      throw std::runtime_error("Unknown binary operator");
+      throw std::runtime_error(std::string("Unknown binary operator"));
     }
   }
 
   llvm::Value *generateCode(FunctionCall &funcCall) {
     llvm::Function *calleeFunc = getModule().getFunction(funcCall.name);
     if (!calleeFunc) {
-      throw std::runtime_error("Unknown function referenced: " + funcCall.name);
+      throw std::runtime_error(std::string("Unknown function referenced: ") + funcCall.name);
     }
 
     std::vector<llvm::Value *> argsV;

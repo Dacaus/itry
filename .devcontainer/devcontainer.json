@@ -26,9 +26,9 @@
 		}
 	},
 	"remoteEnv": {
-    "HTTP_PROXY": "http://host.docker.internal:3067",
-    "HTTPS_PROXY": "http://host.docker.internal:3067",
-    "NO_PROXY": "localhost,127.0.0.1"
+		"HTTP_PROXY": "http://host.docker.internal:3067",
+		"HTTPS_PROXY": "http://host.docker.internal:3067",
+		"NO_PROXY": "localhost,127.0.0.1"
 	},
 	// 添加以下配置来挂载 SSH 密钥
 	"mounts": [

@@ -3,6 +3,8 @@
 #include "ast.hpp"
 #include "token.hpp"
 #include <initializer_list>
+#include <stdexcept>
+#include <string>
 #include <vector>
 namespace itry {
 class Parser {
@@ -44,7 +46,7 @@ private:
     if (!isAtEnd())
       pos++;
     else
-      throw std::runtime_error("Parser: Unexpected end of input.");
+      throw std::runtime_error(std::string("Parser: Unexpected end of input."));
 
     return previous();
   }
@@ -52,7 +54,7 @@ private:
   Token consume(TokenType type, const std::string &errorMessage) {
     if (peek().getType() == type)
       return advance();
-    throw std::runtime_error("Parser: " + errorMessage +
+    throw std::runtime_error(std::string("Parser: ") + errorMessage +
                              " Found: " + peek().to_string());
   }
 
@@ -61,7 +63,7 @@ private:
   bool isAtEnd() { return pos >= tokens.size(); }
 
   void error(const std::string &message) {
-    throw std::runtime_error("Parser Error: " + message);
+    throw std::runtime_error(std::string("Parser Error: ") + message);
   }
 private:
   int pos;

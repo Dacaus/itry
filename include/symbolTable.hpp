@@ -1,14 +1,18 @@
 #pragma once
 
-#include <llvm-21/llvm/IR/Value.h>
+#include <llvm/IR/Value.h>
+#include <itryType.hpp>
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
 namespace itry {
 class SymbolTable {
+private:
+  std::shared_ptr<SymbolTable> global;
   std::shared_ptr<SymbolTable> parent;
   std::unordered_map<std::string, llvm::Value *> table;
-
+  
 public:
   SymbolTable() : parent(nullptr) {}
   SymbolTable(SymbolTable *parent) : parent(parent) {}
