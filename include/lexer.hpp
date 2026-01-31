@@ -15,7 +15,7 @@ namespace itry {
 
 class Lexer {
 public:
-  Lexer(std::string_view sources) : sources(sources), pos(0) {};
+  Lexer(std::string_view sources) : sources(sources), pos(0), reservedWordsTable(GlobalReservedWordsTable::getInstance()) {};
 
   std::vector<Token> scanTokens() {
     while (!isAtEnd()) {
@@ -103,8 +103,8 @@ private:
       }
     }
 
-    if (ReservedWords.find(idStr) != ReservedWords.end()) {
-      return Token(idStr, ReservedWords.at(idStr), std::nullopt);
+    if (reservedWordsTable.getTokenType(idStr).has_value()) {
+      return Token(idStr, reservedWordsTable.getTokenType(idStr).value(), std::nullopt);
     }
 
     return createIdentiferToken(idStr);
@@ -187,6 +187,7 @@ private:
   }
 
 private:
+  GlobalReservedWordsTable &reservedWordsTable;
   std::vector<Token> tokens;
   std::string sources;
   int pos;

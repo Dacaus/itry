@@ -1,12 +1,13 @@
 
 
 #pragma once
+#include <cstddef>
 #include <llvm/IR/DataLayout.h>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
+#include <string_view>
 #include <variant>
 #include <vector>
 namespace itry {
@@ -114,5 +115,14 @@ private:
   }
   std::map<std::string, ItryTypeInfo> types;
 };
+
+
+
+
+ItryTypeInfo getTypeInfo(std::string_view typeName);
+std::string getTypeName(const ItryTypeInfo &typeInfo);
+size_t getTypeSize(const ItryTypeInfo &typeInfo);
+BaseTypeKind getTypeKind(const ItryTypeInfo &typeInfo);
+std::string getTypeName(const ItryTypeInfo &typeInfo);
 
 } // namespace itry

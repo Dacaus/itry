@@ -7,6 +7,7 @@ std::unordered_map<TokenType, std::string> TokenTypeName = {
     {TokenType::FUNC, "FUNC"},
     {TokenType::VAR, "VAR"},
     {TokenType::RETURN, "RETURN"},
+    {TokenType::STRUCT, "STRUCT"},
     {TokenType::DOUBLE, "DOUBLE"},
     {TokenType::PLUS, "PLUS"},
     {TokenType::MINUS, "MINUS"},
@@ -22,11 +23,7 @@ std::unordered_map<TokenType, std::string> TokenTypeName = {
     {TokenType::COMMA, "COMMA"},
     {TokenType::_EOF, "EOF"}};
 
-const std::unordered_map<std::string, TokenType> ReservedWords = {
-    {"func", TokenType::FUNC},
-    {"var", TokenType::VAR},
-    {"return", TokenType::RETURN}
-};
+
 
 std::string Token::to_string() {
   std::string literal_str =
@@ -34,5 +31,6 @@ std::string Token::to_string() {
   return "Token:{\nlexeme:" + _lexeme + " ,\ntype:" + TokenTypeName.at(_type) +
          ",\nliteral: " + literal_str + " ,\n}";
 }
+
 
 } // namespace itry

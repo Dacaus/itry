@@ -5,13 +5,17 @@ statement = funcDeclStatement
           | assignStatment
           | returnStatment
           | exprStatment
+          | structStatment
 exprStatment = expression ";"
+structStatment  = "struct" "{"  { identifier:type} "} "
 funcDeclStatement = "func" identifier "("[identifier{"," identifier}] ")" block
-identifierDeclStatment  = "var" identifier "="  expression ";"
-                        | "var" identifier;
+identifierDeclStatment  = "var" identifier  : type "="  expression ";"
+                        | "var" identifier  : type;
 assignStatment  = identifier  "=" expression  ";"
 expression  = term  {"+" | "-" term}
 term  = factor  {"*" | "/" factor}
 factor = primary  
 primary =  NUMBER | functionCall | "("  expression  ")" | identifier
 functionCall  = identifier  "(" [ expression {"," expression} ] ")"
+
+type =  "double"| struct

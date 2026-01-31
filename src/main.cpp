@@ -10,7 +10,6 @@
 
 #include "llvm/Support/Error.h"
 
-
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -61,26 +60,24 @@ int main(int argc, char **argv) {
 
   auto expr = iparser.parse(tokens);
 
-  itry::AstPrinter printer;
-
 #ifdef _DEBUG
-  printer.print(expr);
+  // itry::AstPrinter printer;
+  // printer.print(expr);
 #endif
 
+  // itry::ItryJITIRBuilder builder;
+  // auto tsm = builder.generateTSM(expr);
 
-  itry::ItryJITIRBuilder builder;
-  auto tsm = builder.generateTSM(expr);
+  // auto jit = cantFail(ItryJIT::Create());
+  // jit->addModule(std::move(tsm));
 
-  auto jit = cantFail(ItryJIT::Create());
-  jit->addModule(std::move(tsm));
+  // llvm::orc::ExecutorAddr addr = jit->lookup("foo");
 
-  llvm::orc::ExecutorAddr addr = jit->lookup("foo");
+  // // auto fp = addr.toPtr<double (*)()>();
+  // using FnTy = double (*)(double, double);
+  // FnTy fp = addr.toPtr<FnTy>();
 
-  // auto fp = addr.toPtr<double (*)()>();
-  using FnTy = double (*)(double, double);
-  FnTy fp = addr.toPtr<FnTy>();
-
-  double result = fp(1,2);
-  std::cout << "Result: " << result << std::endl; 
-  return 0;
+  // double result = fp(1, 2);
+  // std::cout << "Result: " << result << std::endl;
+  // return 0;
 }

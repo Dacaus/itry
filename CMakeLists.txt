@@ -56,6 +56,7 @@ set(SRC_LISTS
     src/token.cpp
     src/ast.cpp
     src/parser.cpp
+    src/itryType.cpp
 )
 
 add_executable(main ${SRC_LISTS})
