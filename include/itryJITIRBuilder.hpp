@@ -63,6 +63,10 @@ private:
     return lastValue;
   }
 
+  llvm::Value *generateCode(Double &dbl) {
+    return llvm::ConstantFP::get(getContext(), llvm::APFloat(dbl.value));
+  }
+
   llvm::Value *generateCode(Number &number) {
     return llvm::ConstantFP::get(getContext(), llvm::APFloat(number.value));
   }

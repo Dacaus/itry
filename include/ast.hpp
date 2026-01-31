@@ -15,16 +15,28 @@ class Number;
 class Binary;
 class Identifier;
 class FunctionCall;
+// class StructExpr;
 
 using Expr =
-    std::variant<std::unique_ptr<Double>,std::unique_ptr<Number>, std::unique_ptr<Binary>,
+    std::variant< std::unique_ptr<Double>,
+                 std::unique_ptr<Number>, std::unique_ptr<Binary>,
+                 
                  std::unique_ptr<FunctionCall>, std::unique_ptr<Identifier>>;
 
-class Double{
-  public:
-    Double(double value) : value(value) {}
-    double value;
+class Double {
+public:
+  Double(double value) : value(value) {}
+  double value;
 };
+
+// class StructExpr {
+// public:
+//   StructExpr(std::string name, std::vector<Expr> members)
+//       : name(name), members(std::move(members)) {}
+//   std::string name;
+//   std::vector<Expr> members;
+// };
+
 
 class Number {
 public:
@@ -61,10 +73,11 @@ class IdentifierDeclStmt;
 class FunctionDeclStmt;
 class ExpressionStmt;
 class ReturnStmt;
-using Stmt = std::variant<
-    std::unique_ptr<AssignStmt>, std::unique_ptr<IdentifierDeclStmt>,
-    std::unique_ptr<FunctionDeclStmt>, std::unique_ptr<ExpressionStmt>,
-    std::unique_ptr<ReturnStmt>>;
+using Stmt =
+    std::variant<std::unique_ptr<AssignStmt>,
+                 std::unique_ptr<IdentifierDeclStmt>,
+                 std::unique_ptr<FunctionDeclStmt>,
+                 std::unique_ptr<ExpressionStmt>, std::unique_ptr<ReturnStmt>>;
 class Block;
 class Block {
 public:
@@ -111,30 +124,8 @@ public:
   Expr expr;
 };
 
-
 void printAst(const std::vector<Stmt> &stmts);
 void printAst(const Stmt &stmt, int indent = 0);
 void printAst(const Expr &expr, int indent = 0);
-
-// A class to print the AST included all of AST'type for debugging purposes
-// class AstPrinter {
-// public:
-//   void print(const Expr &expr, int indent = 0);
-//   void print(const Stmt &stmt, int indent = 0);
-//   void print(const std::vector<Stmt> &stmts, int indent = 0);
-//   void print(Number &number, int indent = 0);
-//   void print(Binary &binary, int indent = 0);
-//   void print(Identifier &identifier, int indent = 0);
-//   void print(FunctionCall &funcCall, int indent = 0);
-//   void print(AssignStmt &assignStmt, int indent = 0);
-//   void print(IdentifierDeclStmt &identDeclStmt, int indent = 0);
-//   void print(FunctionDeclStmt &funcDeclStmt, int indent = 0);
-//   void print(ExpressionStmt &exprStmt, int indent = 0);
-//   void print(ReturnStmt &returnStmt, int indent = 0);
-//   void print(Block &block, int indent = 0);
-
-// private:
-//   void printIndent(int indent);
-// };
 
 } // namespace itry
