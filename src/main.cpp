@@ -65,12 +65,25 @@ int main(int argc, char **argv) {
   // printer.print(expr);
 #endif
 
-  // itry::ItryJITIRBuilder builder;
-  // auto tsm = builder.generateTSM(expr);
 
-  // auto jit = cantFail(ItryJIT::Create());
-  // jit->addModule(std::move(tsm));
+  itry::ItryJITIRBuilder builder;
+  auto tsm = builder.generateTSM(expr);
 
+  auto jit = cantFail(ItryJIT::Create());
+  jit->addModule(std::move(tsm));
+  
+  jit->printIR();
+
+
+  llvm::orc::ExecutorAddr addr = jit->lookup("main"); // 注意：改为 "main"
+  
+  // 调用 main 函数
+  using MainFnTy = double (*)();
+  MainFnTy fp = addr.toPtr<MainFnTy>();
+  
+  double result = fp();
+  std::cout << "Result: " << result << std::endl;
+  return 0;
   // llvm::orc::ExecutorAddr addr = jit->lookup("foo");
 
   // // auto fp = addr.toPtr<double (*)()>();
